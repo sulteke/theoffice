@@ -21,11 +21,11 @@ const { lang, class: className = '' } = Astro.props;
   aria-label={`${business.fullName} — ${lang === 'ru' ? 'на главную' : 'басты бетке'}`}
 >
   <img
-    src="/logo.svg"
+    src="/logo.jpg"
     alt=""
     width="40"
     height="40"
-    class="h-10 w-10 shrink-0 transition-transform duration-300 group-hover:scale-105"
+    class="h-10 w-10 shrink-0 rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
     loading="eager"
   />
   <span class="flex flex-col leading-none">
