@@ -1,0 +1,221 @@
+/* ==========================================================================
+   GLOBAL STYLES — THE OFFICE Lounge Bar
+   Tailwind layers + brand base styles + small reusable component classes.
+   Brand colors are defined in tailwind.config.mjs; mirrored here as CSS
+   variables for any raw CSS that needs them.
+   ========================================================================== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy-base: #0e1729;
+  --navy-elevated: #16213b;
+  --navy-deep: #0a1020;
+  --ink: #eceff4;
+  --muted: #a9b4c6;
+  --accent: #2e5bba;
+  --accent-bright: #6e9be8;
+  --gold: #c9a86a;
+  --header-h: 4.5rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Offset anchor jumps so section titles clear the sticky header. */
+    scroll-padding-top: var(--header-h);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--navy-base);
+    color: var(--ink);
+    font-family: theme('fontFamily.sans');
+    /* Comfortable, readable body text (min 16px). */
+    font-size: 1rem;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: theme('fontFamily.serif');
+    line-height: 1.15;
+    font-weight: 700;
+  }
+
+  /* Visible keyboard focus for accessibility. */
+  :focus-visible {
+    outline: 2px solid var(--accent-bright);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--gold);
+    color: var(--navy-base);
+  }
+
+  /* Subtle on-brand scrollbar (progressive, ignored where unsupported). */
+  * {
+    scrollbar-color: var(--accent) transparent;
+  }
+
+  img {
+    height: auto;
+  }
+}
+
+@layer components {
+  /* Centered content container with responsive horizontal padding. */
+  .container-x {
+    width: 100%;
+    max-width: theme('maxWidth.content');
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @screen md {
+    .container-x { padding-inline: 2rem; }
+  }
+
+  /* Small uppercase label above section titles. */
+  .kicker {
+    display: inline-block;
+    font-size: 0.78rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .section-title {
+    font-family: theme('fontFamily.serif');
+    font-weight: 700;
+    font-size: clamp(1.9rem, 4.5vw, 3rem);
+    line-height: 1.1;
+    color: var(--ink);
+  }
+
+  /* ---- Buttons (min 44px tall = touch friendly) ---- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.7rem 1.4rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-align: center;
+    transition: transform 0.18s ease, background-color 0.18s ease,
+      color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    cursor: pointer;
+  }
+  .btn:active { transform: translateY(1px); }
+
+  /* Primary = gold fill with dark navy text (premium, high contrast). */
+  .btn-primary {
+    background-color: var(--gold);
+    color: var(--navy-base);
+    box-shadow: theme('boxShadow.gold');
+  }
+  .btn-primary:hover { background-color: #d8bd86; }
+
+  /* Secondary = navy/blue outline. */
+  .btn-secondary {
+    background-color: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--accent);
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent-bright);
+    color: var(--accent-bright);
+  }
+
+  /* Form fields. */
+  .field-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .field {
+    width: 100%;
+    min-height: 44px;
+    background-color: var(--navy-base);
+    color: var(--ink);
+    border: 1.5px solid rgba(169, 180, 198, 0.25);
+    border-radius: 0.6rem;
+    padding: 0.65rem 0.9rem;
+    font-size: 1rem;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .field::placeholder { color: rgba(169, 180, 198, 0.6); }
+  .field:focus {
+    outline: none;
+    border-color: var(--accent-bright);
+    box-shadow: 0 0 0 3px rgba(110, 155, 232, 0.25);
+  }
+
+  /* Thin navy divider line, echoing the printed menu. */
+  .rule-navy {
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--accent),
+      rgba(46, 91, 186, 0.15)
+    );
+    border: 0;
+  }
+
+  /* Hide scrollbars on the horizontal category tab bar. */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Link style for inline text links. */
+  .link {
+    color: var(--accent-bright);
+    text-underline-offset: 3px;
+  }
+  .link:hover { text-decoration: underline; }
+}
+
+/* ==========================================================================
+   SCROLL-REVEAL ANIMATIONS
+   - Hidden initially, revealed when scrolled into view (JS adds .is-visible).
+   - Respect users who prefer reduced motion (no animation, always visible).
+   - If JS is disabled, content is always visible (.no-js fallback).
+   ========================================================================== */
+.no-js [data-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.no-js) [data-reveal] {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  html:not(.no-js) [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

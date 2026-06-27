@@ -1,0 +1,105 @@
+---
+/**
+ * EVENTS & LIVE MUSIC — explains weekend live music + turnkey private parties,
+ * lists upcoming events (from src/data/events.ts) and a WhatsApp "book a party"
+ * CTA with a pre-filled message.
+ */
+import { Image } from 'astro:assets';
+import type { Lang } from '../i18n/utils';
+import { useTranslations } from '../i18n/utils';
+import { business, waLink } from '../data/business';
+import { getUpcomingEvents, formatEventDate, eventDay, eventMonthShort } from '../data/events';
+import Icon from './Icon.astro';
+
+import ev1 from '../assets/images/event-01.jpg';
+import ev2 from '../assets/images/event-02.jpg';
+import ev3 from '../assets/images/event-03.jpg';
+import ev4 from '../assets/images/event-04.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const upcoming = getUpcomingEvents();
+const thumbs = [ev1, ev2, ev3, ev4];
+const partyHref = waLink(t('wa.party'));
+---
+
+<section id="events" class="scroll-mt-24 border-t border-white/5 bg-navy-elevated/40 py-20 md:py-28">
+  <div class="container-x">
+    <div class="max-w-2xl" data-reveal>
+      <p class="kicker">{t('events.kicker')}</p>
+      <h2 class="section-title mt-3">{t('events.title')}</h2>
+      <p class="mt-5 text-muted">{t('events.intro')}</p>
+    </div>
+
+    <!-- Two info cards: live music + private parties -->
+    <div class="mt-10 grid gap-4 md:grid-cols-2 md:gap-6">
+      <div data-reveal class="rounded-2xl border border-white/8 bg-navy-elevated p-7">
+        <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gold/12 text-gold">
+          <Icon name="music" size={26} />
+        </span>
+        <h3 class="mt-4 font-serif text-xl font-bold text-ink">{t('events.live.title')}</h3>
+        <p class="mt-2 text-sm text-muted">{t('events.live.desc')}</p>
+      </div>
+      <div data-reveal style="--reveal-delay:100ms" class="rounded-2xl border border-white/8 bg-navy-elevated p-7">
+        <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gold/12 text-gold">
+          <Icon name="gift" size={26} />
+        </span>
+        <h3 class="mt-4 font-serif text-xl font-bold text-ink">{t('events.private.title')}</h3>
+        <p class="mt-2 text-sm text-muted">{t('events.private.desc')}</p>
+      </div>
+    </div>
+
+    <!-- Upcoming events list -->
+    <h3 class="mt-14 font-serif text-2xl font-bold text-ink" data-reveal>{t('events.upcoming')}</h3>
+    <hr class="rule-navy mt-3 max-w-xs" />
+
+    {upcoming.length > 0 ? (
+      <ul class="mt-7 grid gap-4 sm:grid-cols-2">
+        {upcoming.map((ev, i) => (
+          <li
+            data-reveal
+            style={`--reveal-delay:${i * 80}ms`}
+            class="flex gap-4 overflow-hidden rounded-2xl border border-white/8 bg-navy-elevated"
+          >
+            <!-- Date chip -->
+            <div class="flex shrink-0 flex-col items-center justify-center bg-gold/12 px-4 text-center text-gold">
+              <span class="font-serif text-2xl font-bold leading-none">{eventDay(ev.date)}</span>
+              <span class="mt-1 text-[0.65rem] uppercase tracking-widest">{eventMonthShort(ev.date, lang)}</span>
+            </div>
+            <!-- Thumbnail -->
+            <Image
+              src={thumbs[i % thumbs.length]}
+              alt=""
+              widths={[120, 220]}
+              sizes="110px"
+              loading="lazy"
+              class="hidden h-auto w-28 shrink-0 object-cover sm:block"
+            />
+            <!-- Details -->
+            <div class="min-w-0 flex-1 py-3 pr-4">
+              <p class="text-xs font-medium uppercase tracking-wider text-muted">{formatEventDate(ev.date, lang)}</p>
+              <h4 class="mt-1 truncate font-serif text-lg font-bold text-ink">{ev.title[lang]}</h4>
+              <p class="text-sm text-accent-bright">{ev.performer}</p>
+              <p class="mt-1 line-clamp-2 text-sm text-muted">{ev.note[lang]}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="mt-7 text-muted">{t('events.none')}</p>
+    )}
+
+    <!-- Book a private party CTA -->
+    <div class="mt-12 flex flex-col items-center gap-3 rounded-2xl border border-gold/20 bg-gold/5 p-8 text-center" data-reveal>
+      <p class="max-w-xl text-muted">{t('events.private.desc')}</p>
+      <a href={partyHref} target="_blank" rel="noopener" class="btn btn-primary mt-2">
+        <Icon name="whatsapp" size={20} />
+        {t('events.bookParty')}
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,160 @@
+---
+/**
+ * RESERVATION FORM — two ways to submit (both wired up):
+ *  (a) PRIMARY  : on submit, JS opens WhatsApp with a pre-filled message.
+ *  (b) BACKUP   : a real HTML POST to Web3Forms emails the booking to the owner
+ *                 (works even with JS off). Needs a free access key — see below.
+ *
+ *  >>> OWNER TODO: get a FREE key at https://web3forms.com (no account needed,
+ *      250 submissions/month) and paste it into WEB3FORMS_ACCESS_KEY below. <<<
+ */
+import type { Lang } from '../i18n/utils';
+import { useTranslations } from '../i18n/utils';
+import { business, telLink } from '../data/business';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+// ⬇⬇⬇ PASTE YOUR FREE WEB3FORMS KEY HERE (replaces the email backup placeholder)
+const WEB3FORMS_ACCESS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY';
+---
+
+<section id="reserve" class="scroll-mt-24 border-t border-white/5 bg-navy-elevated/40 py-20 md:py-28">
+  <div class="container-x">
+    <div class="grid gap-10 lg:grid-cols-2 lg:gap-16">
+      <!-- Intro + phone -->
+      <div data-reveal>
+        <p class="kicker">{t('reserve.kicker')}</p>
+        <h2 class="section-title mt-3">{t('reserve.title')}</h2>
+        <p class="mt-5 text-muted">{t('reserve.intro')}</p>
+
+        <div class="mt-8 rounded-2xl border border-white/8 bg-navy-elevated p-6">
+          <p class="text-sm text-muted">{t('reserve.confirmNote')}</p>
+          <div class="mt-4 flex flex-wrap items-center gap-3">
+            <span class="text-sm text-muted">{t('reserve.orCall')}:</span>
+            <a href={telLink} class="inline-flex items-center gap-2 font-medium text-accent-bright hover:underline">
+              <Icon name="phone" size={18} />
+              {business.phoneDisplay}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div data-reveal style="--reveal-delay:120ms">
+        <form
+          id="reserve-form"
+          action="https://api.web3forms.com/submit"
+          method="POST"
+          class="rounded-2xl border border-white/8 bg-navy-elevated p-6 sm:p-8"
+          data-wa-number={business.whatsapp}
+          data-template={t('reserve.waTemplate')}
+          data-empty={t('reserve.noteEmpty')}
+        >
+          <!-- Web3Forms hidden fields (email backup) -->
+          <input type="hidden" name="access_key" value={WEB3FORMS_ACCESS_KEY} />
+          <input type="hidden" name="subject" value={`${business.fullName} — ${t('reserve.title')}`} />
+          <input type="hidden" name="from_name" value={business.fullName} />
+          <!-- Honeypot: real people never check this; bots do -> submission ignored -->
+          <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <label for="r-name" class="field-label">{t('reserve.form.name')}</label>
+              <input id="r-name" name="name" type="text" required autocomplete="name" class="field" placeholder={t('reserve.form.namePlaceholder')} />
+            </div>
+
+            <div class="sm:col-span-2">
+              <label for="r-phone" class="field-label">{t('reserve.form.phone')}</label>
+              <input id="r-phone" name="phone" type="tel" required autocomplete="tel" class="field" placeholder={t('reserve.form.phonePlaceholder')} />
+            </div>
+
+            <div>
+              <label for="r-date" class="field-label">{t('reserve.form.date')}</label>
+              <input id="r-date" name="date" type="date" required class="field" />
+            </div>
+
+            <div>
+              <label for="r-time" class="field-label">{t('reserve.form.time')}</label>
+              <input id="r-time" name="time" type="time" required class="field" />
+            </div>
+
+            <div class="sm:col-span-2">
+              <label for="r-guests" class="field-label">{t('reserve.form.guests')}</label>
+              <input id="r-guests" name="guests" type="number" min="1" max="50" inputmode="numeric" required class="field" placeholder="2" />
+            </div>
+
+            <div class="sm:col-span-2">
+              <label for="r-notes" class="field-label">
+                {t('reserve.form.notes')}
+                <span class="font-normal text-muted/70">({t('reserve.form.notesOptional')})</span>
+              </label>
+              <textarea id="r-notes" name="notes" rows="3" class="field resize-y" placeholder={t('reserve.form.notesPlaceholder')}></textarea>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary mt-6 w-full">
+            <Icon name="whatsapp" size={20} />
+            {t('reserve.form.submit')}
+          </button>
+
+          <p id="reserve-success" role="status" aria-live="polite" hidden class="mt-4 rounded-lg border border-gold/30 bg-gold/10 p-3 text-center text-sm text-ink">
+            {t('reserve.success')}
+          </p>
+
+          <noscript>
+            <p class="mt-4 text-center text-sm text-muted">{t('reserve.noscript')}</p>
+          </noscript>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // PRIMARY submission: open WhatsApp with the booking pre-filled.
+  // BACKUP: also POST to Web3Forms in the background (emails the owner once a
+  // real access key is set). Without JS, the plain form POST handles it.
+  const form = document.getElementById('reserve-form') as HTMLFormElement | null;
+  const success = document.getElementById('reserve-success');
+
+  // Set the date field's minimum to today.
+  const dateInput = document.getElementById('r-date') as HTMLInputElement | null;
+  if (dateInput) dateInput.min = new Date().toISOString().split('T')[0];
+
+  form?.addEventListener('submit', (e) => {
+    // Honeypot: if filled, silently ignore (likely a bot).
+    const bot = form.querySelector<HTMLInputElement>('[name="botcheck"]');
+    if (bot?.checked) {
+      e.preventDefault();
+      return;
+    }
+    if (!form.reportValidity()) return; // let the browser show field errors
+    e.preventDefault();
+
+    const data = new FormData(form);
+    const empty = form.dataset.empty || '—';
+    const val = (k: string) => (data.get(k)?.toString().trim() || empty);
+
+    const msg = (form.dataset.template || '')
+      .split('{name}').join(val('name'))
+      .split('{phone}').join(val('phone'))
+      .split('{date}').join(val('date'))
+      .split('{time}').join(val('time'))
+      .split('{guests}').join(val('guests'))
+      .split('{notes}').join(val('notes'));
+
+    // (a) Open WhatsApp (primary).
+    window.open(`https://wa.me/${form.dataset.waNumber}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+
+    // (b) Best-effort email backup via Web3Forms (no-op until a real key is set).
+    fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } }).catch(() => {});
+
+    if (success) success.hidden = false;
+    form.reset();
+  });
+</script>

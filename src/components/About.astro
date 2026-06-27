@@ -1,0 +1,76 @@
+---
+/**
+ * ABOUT / CONCEPT — atmospheric story + a light "office humor" line +
+ * four feature cards (cuisine / hookah / live music / private parties).
+ */
+import { Image } from 'astro:assets';
+import type { Lang, TranslationKey } from '../i18n/utils';
+import { useTranslations } from '../i18n/utils';
+import Icon from './Icon.astro';
+import aboutImg from '../assets/images/about.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const features: { icon: string; title: TranslationKey; desc: TranslationKey }[] = [
+  { icon: 'utensils', title: 'about.feature.cuisine.title', desc: 'about.feature.cuisine.desc' },
+  { icon: 'hookah', title: 'about.feature.hookah.title', desc: 'about.feature.hookah.desc' },
+  { icon: 'music', title: 'about.feature.music.title', desc: 'about.feature.music.desc' },
+  { icon: 'gift', title: 'about.feature.parties.title', desc: 'about.feature.parties.desc' },
+];
+---
+
+<section id="about" class="scroll-mt-24 border-t border-white/5 py-20 md:py-28">
+  <div class="container-x">
+    <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <!-- Text -->
+      <div data-reveal>
+        <p class="kicker">{t('about.kicker')}</p>
+        <h2 class="section-title mt-3">{t('about.title')}</h2>
+        <p class="mt-6 text-muted">{t('about.body')}</p>
+
+        <!-- Light "office humor" line -->
+        <p
+          class="mt-7 border-l-2 border-gold/70 pl-4 font-serif text-lg italic text-ink/90"
+        >
+          {t('about.humor')}
+        </p>
+      </div>
+
+      <!-- Image -->
+      <div data-reveal style="--reveal-delay:120ms">
+        <div class="relative overflow-hidden rounded-2xl shadow-card">
+          <Image
+            src={aboutImg}
+            alt={lang === 'ru' ? 'Интерьер THE OFFICE' : 'THE OFFICE интерьері'}
+            widths={[480, 720, 1000]}
+            sizes="(min-width: 1024px) 40vw, 90vw"
+            loading="lazy"
+            class="h-full w-full object-cover"
+          />
+          <div class="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature cards -->
+    <ul class="mt-14 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+      {features.map((f, i) => (
+        <li
+          data-reveal
+          style={`--reveal-delay:${i * 90}ms`}
+          class="group rounded-2xl border border-white/8 bg-navy-elevated p-6 transition-colors hover:border-gold/40"
+        >
+          <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gold/12 text-gold">
+            <Icon name={f.icon} size={26} />
+          </span>
+          <h3 class="mt-4 font-serif text-lg font-bold text-ink">{t(f.title)}</h3>
+          <p class="mt-2 text-sm text-muted">{t(f.desc)}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

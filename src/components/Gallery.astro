@@ -1,0 +1,153 @@
+---
+/**
+ * GALLERY — responsive masonry grid of optimized images with a click-to-open
+ * lightbox (keyboard accessible: arrows to navigate, Esc to close).
+ * Replace the photo FILES in src/assets/images/gallery-XX.jpg (see ASSETS_TODO.md).
+ */
+import { Image, getImage } from 'astro:assets';
+import type { Lang } from '../i18n/utils';
+import { useTranslations } from '../i18n/utils';
+import { gallery } from '../data/gallery';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+// Pre-render a larger optimized version of each image for the lightbox.
+const items = await Promise.all(
+  gallery.map(async (g) => ({
+    src: g.src,
+    alt: g.alt[lang],
+    full: (await getImage({ src: g.src, width: 1600, format: 'webp' })).src,
+  }))
+);
+---
+
+<section id="gallery" class="scroll-mt-24 border-t border-white/5 py-20 md:py-28">
+  <div class="container-x">
+    <div class="max-w-2xl" data-reveal>
+      <p class="kicker">{t('gallery.kicker')}</p>
+      <h2 class="section-title mt-3">{t('gallery.title')}</h2>
+      <p class="mt-5 text-muted">{t('gallery.intro')}</p>
+    </div>
+
+    <!-- Masonry via CSS columns -->
+    <div class="mt-10 gap-4 [column-fill:_balance] columns-2 md:columns-3 [&>*]:mb-4">
+      {items.map((item, i) => (
+        <button
+          type="button"
+          data-lightbox
+          data-index={i}
+          data-full={item.full}
+          data-alt={item.alt}
+          class="group block w-full break-inside-avoid overflow-hidden rounded-xl border border-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright"
+          aria-label={`${t('gallery.open')} — ${item.alt}`}
+        >
+          <Image
+            src={item.src}
+            alt={item.alt}
+            widths={[280, 420, 640]}
+            sizes="(min-width: 768px) 30vw, 45vw"
+            loading="lazy"
+            class="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Lightbox overlay -->
+  <div
+    id="lightbox"
+    class="fixed inset-0 z-[80] hidden items-center justify-center bg-navy-deep/95 p-4 backdrop-blur"
+    role="dialog"
+    aria-modal="true"
+    aria-label={t('gallery.title')}
+  >
+    <button id="lb-close" type="button" class="absolute right-4 top-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-ink hover:bg-white/20" aria-label={t('gallery.close')}>
+      <Icon name="close" size={26} />
+    </button>
+    <button id="lb-prev" type="button" class="absolute left-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-ink hover:bg-white/20 md:left-6" aria-label={t('gallery.prev')}>
+      <Icon name="arrow-left" size={26} />
+    </button>
+    <button id="lb-next" type="button" class="absolute right-3 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-ink hover:bg-white/20 md:right-6" aria-label={t('gallery.next')}>
+      <Icon name="arrow-right" size={26} />
+    </button>
+    <figure class="flex max-h-full max-w-5xl flex-col items-center">
+      <img id="lb-image" src="" alt="" class="max-h-[80vh] w-auto rounded-lg object-contain" />
+      <figcaption id="lb-caption" class="mt-3 text-center text-sm text-muted"></figcaption>
+    </figure>
+  </div>
+</section>
+
+<script>
+  // --- Accessible lightbox ---
+  const triggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-lightbox]'));
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lb-image') as HTMLImageElement | null;
+  const caption = document.getElementById('lb-caption');
+  const btnClose = document.getElementById('lb-close');
+  const btnPrev = document.getElementById('lb-prev');
+  const btnNext = document.getElementById('lb-next');
+
+  let index = 0;
+  let lastFocused: HTMLElement | null = null;
+
+  const show = (i: number) => {
+    if (!triggers.length || !img || !caption) return;
+    index = (i + triggers.length) % triggers.length;
+    const el = triggers[index];
+    img.src = el.dataset.full || '';
+    img.alt = el.dataset.alt || '';
+    caption.textContent = `${el.dataset.alt || ''}  ·  ${index + 1} / ${triggers.length}`;
+  };
+
+  const open = (i: number) => {
+    if (!lb) return;
+    lastFocused = document.activeElement as HTMLElement;
+    show(i);
+    lb.classList.remove('hidden');
+    lb.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+    btnClose?.focus();
+  };
+
+  const close = () => {
+    if (!lb) return;
+    lb.classList.add('hidden');
+    lb.classList.remove('flex');
+    document.body.style.overflow = '';
+    lastFocused?.focus();
+  };
+
+  triggers.forEach((el, i) => el.addEventListener('click', () => open(i)));
+  btnClose?.addEventListener('click', close);
+  btnPrev?.addEventListener('click', () => show(index - 1));
+  btnNext?.addEventListener('click', () => show(index + 1));
+  // Click on the dark backdrop (not the image) closes.
+  lb?.addEventListener('click', (e) => {
+    if (e.target === lb) close();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (lb?.classList.contains('hidden')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') show(index - 1);
+    if (e.key === 'ArrowRight') show(index + 1);
+    // Simple focus trap between the three controls.
+    if (e.key === 'Tab') {
+      const focusables = [btnClose, btnPrev, btnNext].filter(Boolean) as HTMLElement[];
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  });
+</script>

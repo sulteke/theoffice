@@ -1,0 +1,19 @@
+---
+/**
+ * RUSSIAN MENU SUB-PAGE (/ru/menu) — a clean, shareable full menu (great for
+ * the Instagram bio link). Reuses the same MenuSection component as the home
+ * page, so there is only ONE place to edit dishes/prices: src/data/menu.ts.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MenuSection from '../../components/MenuSection.astro';
+import { useTranslations } from '../../i18n/utils';
+
+const lang = 'ru' as const;
+const t = useTranslations(lang);
+---
+
+<BaseLayout lang={lang} title={t('seo.menu.title')} description={t('seo.menu.desc')}>
+  <!-- Spacer so the menu clears the fixed header (this page has no hero). -->
+  <div aria-hidden="true" style="height: var(--header-h);"></div>
+  <MenuSection lang={lang} standalone />
+</BaseLayout>

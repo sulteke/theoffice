@@ -1,0 +1,35 @@
+---
+/**
+ * Logo = circular emblem (public/logo.svg) + the wordmark "THE OFFICE / LOUNGE BAR".
+ * Clicking it returns to the language home page.
+ * To swap the emblem, replace public/logo.svg (see ASSETS_TODO.md).
+ */
+import type { Lang } from '../i18n/utils';
+import { localeHref } from '../i18n/utils';
+import { business } from '../data/business';
+
+interface Props {
+  lang: Lang;
+  class?: string;
+}
+const { lang, class: className = '' } = Astro.props;
+---
+
+<a
+  href={localeHref(lang, '/')}
+  class={`group inline-flex items-center gap-3 ${className}`}
+  aria-label={`${business.fullName} — ${lang === 'ru' ? 'на главную' : 'басты бетке'}`}
+>
+  <img
+    src="/logo.svg"
+    alt=""
+    width="40"
+    height="40"
+    class="h-10 w-10 shrink-0 transition-transform duration-300 group-hover:scale-105"
+    loading="eager"
+  />
+  <span class="flex flex-col leading-none">
+    <span class="font-serif text-base font-bold tracking-[0.22em] text-ink">THE OFFICE</span>
+    <span class="mt-1 text-[0.62rem] font-medium tracking-[0.38em] text-gold">LOUNGE BAR</span>
+  </span>
+</a>

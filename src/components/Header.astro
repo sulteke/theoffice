@@ -1,0 +1,142 @@
+---
+/**
+ * Sticky site header. Transparent over the hero, solidifies on scroll.
+ * Contains: logo, nav links, RU/KZ toggle, and the gold "Reserve" button.
+ * On mobile the nav collapses into a toggle button.
+ */
+import type { Lang } from '../i18n/utils';
+import { useTranslations, localeHref } from '../i18n/utils';
+import { getNavLinks } from '../data/nav';
+import Logo from './Logo.astro';
+import LanguageToggle from './LanguageToggle.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const links = getNavLinks(lang);
+const reserveHref = localeHref(lang, '#reserve');
+---
+
+<header id="site-header" class="fixed inset-x-0 top-0 z-50">
+  <div class="container-x flex h-[var(--header-h)] items-center justify-between gap-4">
+    <Logo lang={lang} />
+
+    <!-- Desktop navigation -->
+    <nav class="hidden items-center gap-7 lg:flex" aria-label="THE OFFICE">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          data-nav-anchor={link.anchor}
+          class="relative py-1 text-sm font-medium text-muted transition-colors hover:text-ink data-[active]:text-ink"
+        >
+          {t(link.labelKey)}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <LanguageToggle lang={lang} class="hidden sm:inline-flex" />
+      <a href={reserveHref} class="btn btn-primary hidden text-sm lg:inline-flex">
+        {t('cta.reserve')}
+      </a>
+
+      <!-- Mobile menu button -->
+      <button
+        id="menu-toggle"
+        type="button"
+        class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-ink lg:hidden"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        aria-label={t('a11y.menuOpen')}
+      >
+        <span data-icon="open"><Fragment set:html={`<svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round'><path d='M3 6h18'/><path d='M3 12h18'/><path d='M3 18h18'/></svg>`} /></span>
+        <span data-icon="close" class="hidden"><Fragment set:html={`<svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>`} /></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile dropdown panel -->
+  <div
+    id="mobile-menu"
+    class="hidden border-t border-white/10 bg-navy-deep/98 backdrop-blur lg:hidden"
+  >
+    <nav class="container-x flex flex-col gap-1 py-4" aria-label="THE OFFICE mobile">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          data-mobile-link
+          class="rounded-lg px-3 py-3 text-base font-medium text-ink/90 transition-colors hover:bg-white/5"
+        >
+          {t(link.labelKey)}
+        </a>
+      ))}
+      <div class="mt-3 flex items-center justify-between gap-3">
+        <LanguageToggle lang={lang} />
+        <a href={reserveHref} data-mobile-link class="btn btn-primary flex-1 text-sm">
+          {t('cta.reserve')}
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  #site-header {
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 16, 32, 0.78),
+      rgba(10, 16, 32, 0)
+    );
+    transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    border-bottom: 1px solid transparent;
+  }
+  #site-header.is-scrolled {
+    background: rgba(10, 16, 32, 0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.7);
+  }
+</style>
+
+<script>
+  // --- Header behavior: solidify on scroll + mobile menu toggle ---
+  const header = document.getElementById('site-header');
+  const toggle = document.getElementById('menu-toggle');
+  const panel = document.getElementById('mobile-menu');
+  const openIcon = toggle?.querySelector('[data-icon="open"]');
+  const closeIcon = toggle?.querySelector('[data-icon="close"]');
+
+  // Solidify header once the user scrolls past the top.
+  const onScroll = () => {
+    if (!header) return;
+    header.classList.toggle('is-scrolled', window.scrollY > 12);
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const setMenu = (open: boolean) => {
+    if (!panel || !toggle) return;
+    panel.classList.toggle('hidden', !open);
+    toggle.setAttribute('aria-expanded', String(open));
+    openIcon?.classList.toggle('hidden', open);
+    closeIcon?.classList.toggle('hidden', !open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+
+  toggle?.addEventListener('click', () => {
+    setMenu(panel?.classList.contains('hidden') ?? true);
+  });
+  // Close on link click, Escape, or when resizing up to desktop.
+  panel?.querySelectorAll('[data-mobile-link]').forEach((el) =>
+    el.addEventListener('click', () => setMenu(false))
+  );
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setMenu(false);
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 1024) setMenu(false);
+  });
+</script>

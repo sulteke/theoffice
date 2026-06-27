@@ -1,0 +1,107 @@
+---
+/**
+ * CONTACT + MAP + HOURS. Address, opening hours, tappable phone, WhatsApp &
+ * Instagram, a "Get directions" link, and an embedded map.
+ *
+ * MAP: defaults to a free OpenStreetMap embed centered on the venue's coords
+ * (set in src/data/business.ts -> geo). To use 2GIS (the #1 map app in
+ * Kazakhstan) instead, see the commented instructions next to the <iframe>.
+ */
+import type { Lang } from '../i18n/utils';
+import { useTranslations } from '../i18n/utils';
+import { business, telLink, waLink } from '../data/business';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const { lat, lng } = business.geo;
+// Bounding box around the pin for the OpenStreetMap embed.
+const d = 0.012;
+const bbox = `${(lng - d).toFixed(4)},${(lat - d / 2).toFixed(4)},${(lng + d).toFixed(4)},${(lat + d / 2).toFixed(4)}`;
+const osmSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
+
+// "Get directions" — opens 2GIS (preferred in KZ) searching the address.
+const directionsHref = `https://2gis.kz/taldykorgan/search/${encodeURIComponent(business.addressShort.ru + ', Талдыкорган')}`;
+const waHref = waLink(t('wa.general'));
+
+const infoRows = [
+  { icon: 'pin', label: t('contact.addressLabel'), value: business.address[lang] },
+  { icon: 'clock', label: t('contact.hoursLabel'), value: `${business.hours.everyDay[lang]}, ${business.hours.display}` },
+];
+---
+
+<section id="contacts" class="scroll-mt-24 border-t border-white/5 py-20 md:py-28">
+  <div class="container-x">
+    <div class="max-w-2xl" data-reveal>
+      <p class="kicker">{t('contact.kicker')}</p>
+      <h2 class="section-title mt-3">{t('contact.title')}</h2>
+    </div>
+
+    <div class="mt-10 grid gap-8 lg:grid-cols-2 lg:gap-12">
+      <!-- Info column -->
+      <div data-reveal class="flex flex-col gap-5">
+        {infoRows.map((row) => (
+          <div class="flex items-start gap-4">
+            <span class="mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/12 text-gold">
+              <Icon name={row.icon} size={22} />
+            </span>
+            <div>
+              <p class="text-xs uppercase tracking-widest text-muted">{row.label}</p>
+              <p class="mt-1 text-ink">{row.value}</p>
+            </div>
+          </div>
+        ))}
+
+        <!-- Phone -->
+        <div class="flex items-start gap-4">
+          <span class="mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/12 text-gold">
+            <Icon name="phone" size={22} />
+          </span>
+          <div>
+            <p class="text-xs uppercase tracking-widest text-muted">{t('contact.phoneLabel')}</p>
+            <a href={telLink} class="mt-1 inline-block text-ink hover:text-accent-bright">{business.phoneDisplay}</a>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="mt-2 flex flex-wrap gap-3">
+          <a href={directionsHref} target="_blank" rel="noopener" class="btn btn-secondary text-sm">
+            <Icon name="route" size={18} />
+            {t('cta.directions')}
+          </a>
+          <a href={waHref} target="_blank" rel="noopener" class="btn btn-primary text-sm">
+            <Icon name="whatsapp" size={18} />
+            WhatsApp
+          </a>
+          <a href={business.instagram} target="_blank" rel="noopener" class="btn btn-secondary text-sm">
+            <Icon name="instagram" size={18} />
+            {business.instagramHandle}
+          </a>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div data-reveal style="--reveal-delay:120ms" class="overflow-hidden rounded-2xl border border-white/10">
+        {/*
+          ── HOW TO SWAP IN 2GIS (recommended for Kazakhstan) ────────────────
+          1. Open your venue on https://2gis.kz and find your firm/point.
+          2. 2GIS offers an embeddable widget — copy its <iframe> code.
+          3. Replace the whole <iframe> below with the 2GIS one (keep title=).
+          Until then, this free OpenStreetMap embed shows the location pin.
+          Set exact coordinates in src/data/business.ts -> geo.
+        */}
+        <iframe
+          title={t('contact.mapTitle')}
+          src={osmSrc}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          class="h-[360px] w-full lg:h-full lg:min-h-[420px]"
+        ></iframe>
+      </div>
+    </div>
+  </div>
+</section>

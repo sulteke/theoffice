@@ -1,0 +1,40 @@
+---
+/**
+ * Sticky bottom action bar — phones only. Keeps "Call", "WhatsApp" and the
+ * gold "Reserve" CTA always within thumb reach. Hidden on md+ (desktop uses
+ * the header button + floating WhatsApp button).
+ */
+import type { Lang } from '../i18n/utils';
+import { useTranslations, localeHref } from '../i18n/utils';
+import { telLink, waLink } from '../data/business';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const waHref = waLink(t('wa.general'));
+---
+
+<div
+  class="fixed inset-x-0 bottom-0 z-40 flex items-stretch gap-2 border-t border-white/10 bg-navy-deep/95 p-2.5 backdrop-blur md:hidden"
+  style="padding-bottom: calc(0.625rem + env(safe-area-inset-bottom));"
+>
+  <a href={telLink} aria-label={t('cta.call')} class="btn btn-secondary px-4">
+    <Icon name="phone" size={20} />
+  </a>
+  <a href={waHref} target="_blank" rel="noopener" aria-label={t('cta.whatsapp')} class="btn px-4 text-ink" style="background-color:#25D366;">
+    <Icon name="whatsapp" size={20} />
+  </a>
+  <a href={localeHref(lang, '#reserve')} class="btn btn-primary flex-1 text-sm">
+    {t('cta.reserve')}
+  </a>
+</div>
+
+<!-- Keep page content clear of the sticky bar on phones. -->
+<style is:global>
+  @media (max-width: 767px) {
+    body { padding-bottom: 4.75rem; }
+  }
+</style>

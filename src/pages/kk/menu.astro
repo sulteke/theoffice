@@ -1,0 +1,18 @@
+---
+/**
+ * KAZAKH MENU SUB-PAGE (/kk/menu). Reuses the MenuSection component.
+ * Edit dishes/prices in src/data/menu.ts (one place for both languages).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MenuSection from '../../components/MenuSection.astro';
+import { useTranslations } from '../../i18n/utils';
+
+const lang = 'kk' as const;
+const t = useTranslations(lang);
+---
+
+<BaseLayout lang={lang} title={t('seo.menu.title')} description={t('seo.menu.desc')}>
+  <!-- Spacer so the menu clears the fixed header (this page has no hero). -->
+  <div aria-hidden="true" style="height: var(--header-h);"></div>
+  <MenuSection lang={lang} standalone />
+</BaseLayout>

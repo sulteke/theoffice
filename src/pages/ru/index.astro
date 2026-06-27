@@ -1,0 +1,28 @@
+---
+/**
+ * RUSSIAN HOME PAGE (/ru/). Composes all sections in order.
+ * (The Kazakh version is src/pages/kk/index.astro — keep them in sync.)
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+import About from '../../components/About.astro';
+import MenuSection from '../../components/MenuSection.astro';
+import Events from '../../components/Events.astro';
+import Gallery from '../../components/Gallery.astro';
+import Reservation from '../../components/Reservation.astro';
+import Contact from '../../components/Contact.astro';
+import { useTranslations } from '../../i18n/utils';
+
+const lang = 'ru' as const;
+const t = useTranslations(lang);
+---
+
+<BaseLayout lang={lang} title={t('seo.home.title')} description={t('seo.home.desc')}>
+  <Hero lang={lang} />
+  <About lang={lang} />
+  <MenuSection lang={lang} />
+  <Events lang={lang} />
+  <Gallery lang={lang} />
+  <Reservation lang={lang} />
+  <Contact lang={lang} />
+</BaseLayout>

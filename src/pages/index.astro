@@ -1,0 +1,24 @@
+---
+/**
+ * ROOT REDIRECT — sends "/" to the Russian site "/ru/".
+ * Implemented as a static meta-refresh page so it works on any host
+ * (Netlify, Vercel, etc.) with zero configuration.
+ */
+const target = '/ru/';
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <link rel="canonical" href={target} />
+    <meta name="robots" content="noindex" />
+    <title>THE OFFICE Lounge Bar</title>
+    <script is:inline>window.location.replace('/ru/');</script>
+  </head>
+  <body style="background:#0E1729;color:#ECEFF4;font-family:sans-serif">
+    <a href="/ru/" style="color:#C9A86A">THE OFFICE Lounge Bar →</a>
+  </body>
+</html>

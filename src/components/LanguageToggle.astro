@@ -1,0 +1,46 @@
+---
+/**
+ * RU / KZ language toggle. Links to the SAME page in the other language,
+ * preserving the route. A tiny script (in BaseLayout) appends the current
+ * #anchor so you stay in place when switching languages.
+ */
+import type { Lang } from '../i18n/utils';
+import { localizedPath, useTranslations } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+  class?: string;
+}
+const { lang, class: className = '' } = Astro.props;
+const t = useTranslations(lang);
+
+const ruHref = localizedPath(Astro.url, 'ru');
+const kkHref = localizedPath(Astro.url, 'kk');
+const base =
+  'px-2.5 py-1 rounded-full text-sm font-semibold tracking-wide transition-colors';
+const active = 'bg-gold text-navy-base';
+const idle = 'text-muted hover:text-ink';
+---
+
+<div
+  class={`inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 p-0.5 ${className}`}
+  role="group"
+  aria-label={t('lang.switch')}
+>
+  <a
+    href={ruHref}
+    data-lang-link
+    hreflang="ru"
+    lang="ru"
+    aria-current={lang === 'ru' ? 'true' : undefined}
+    class={`${base} ${lang === 'ru' ? active : idle}`}
+  >RU</a>
+  <a
+    href={kkHref}
+    data-lang-link
+    hreflang="kk"
+    lang="kk"
+    aria-current={lang === 'kk' ? 'true' : undefined}
+    class={`${base} ${lang === 'kk' ? active : idle}`}
+  >KZ</a>
+</div>

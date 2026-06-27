@@ -1,0 +1,104 @@
+---
+/**
+ * HERO — full-viewport intro. Big serif tagline + concept line + two CTAs.
+ * Background uses an optimized <Image>. To swap it for a looping muted video
+ * later, see the commented <video> block at the bottom of this file.
+ */
+import { Image } from 'astro:assets';
+import type { Lang } from '../i18n/utils';
+import { useTranslations, localeHref } from '../i18n/utils';
+import { business } from '../data/business';
+import Icon from './Icon.astro';
+import heroImg from '../assets/images/hero.jpg';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section
+  id="home"
+  class="relative flex min-h-[100svh] items-center overflow-hidden"
+  aria-label={business.fullName}
+>
+  <!-- Background image (replace src in src/assets/images/hero.jpg) -->
+  <Image
+    src={heroImg}
+    alt=""
+    widths={[768, 1280, 1920]}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+    class="absolute inset-0 h-full w-full object-cover"
+  />
+  <!-- Dark overlay for text legibility -->
+  <div
+    class="absolute inset-0 bg-gradient-to-b from-navy-deep/80 via-navy-base/70 to-navy-base"
+    aria-hidden="true"
+  ></div>
+
+  <!--
+    OPTIONAL: looping muted hero video. Put a file at public/hero.mp4 and
+    uncomment this block (and remove/keep the <Image> as a poster fallback).
+    <video class="absolute inset-0 h-full w-full object-cover" autoplay muted loop playsinline poster="/images/og-image.jpg">
+      <source src="/hero.mp4" type="video/mp4" />
+    </video>
+  -->
+
+  <div class="container-x relative z-10 py-28 text-center md:py-32">
+    <p class="kicker animate-fade-in" style="animation-delay:.05s">
+      {business.fullName}
+    </p>
+
+    <h1
+      class="mx-auto mt-5 max-w-4xl font-serif text-[2.4rem] font-bold leading-[1.08] text-ink animate-fade-up sm:text-6xl lg:text-7xl"
+      style="animation-delay:.12s"
+    >
+      {business.taglines[lang]}
+    </h1>
+
+    <p
+      class="mx-auto mt-6 max-w-2xl text-base text-muted animate-fade-up sm:text-lg"
+      style="animation-delay:.22s"
+    >
+      {t('hero.subtitle')}
+    </p>
+
+    <div
+      class="mt-9 flex flex-col items-center justify-center gap-3 animate-fade-up sm:flex-row"
+      style="animation-delay:.32s"
+    >
+      <a href={localeHref(lang, '#reserve')} class="btn btn-primary w-full sm:w-auto">
+        {t('cta.reserve')}
+      </a>
+      <a href={localeHref(lang, '#menu')} class="btn btn-secondary w-full sm:w-auto">
+        {t('cta.viewMenu')}
+      </a>
+    </div>
+
+    <div
+      class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted animate-fade-in"
+      style="animation-delay:.5s"
+    >
+      <span class="inline-flex items-center gap-2">
+        <Icon name="clock" size={18} class="text-gold" />
+        {business.hours.everyDay[lang]} {business.hours.display}
+      </span>
+      <span class="inline-flex items-center gap-2">
+        <Icon name="pin" size={18} class="text-gold" />
+        {business.city[lang]}
+      </span>
+    </div>
+  </div>
+
+  <!-- Scroll-down indicator -->
+  <a
+    href={localeHref(lang, '#about')}
+    class="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-muted/80 transition-colors hover:text-ink"
+    aria-label={t('hero.scroll')}
+  >
+    <Icon name="chevron-down" size={30} class="animate-bob" />
+  </a>
+</section>

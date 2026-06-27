@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PLACEHOLDER LOGO EMBLEM for THE OFFICE Lounge Bar.
+  A circular black-and-white badge: a coffee cup with "BMD".
+  TO REPLACE: drop your real logo here as public/logo.svg (or logo.png and
+  update the <img src> in src/components/Logo.astro). Keep it roughly square.
+  Colors use off-white (#ECEFF4) so it shows on the dark navy site.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="THE OFFICE emblem">
+  <g fill="none" stroke="#ECEFF4" stroke-width="3">
+    <circle cx="100" cy="100" r="92"/>
+    <circle cx="100" cy="100" r="80" stroke-width="1.4" opacity="0.7"/>
+  </g>
+  <!-- steam -->
+  <g fill="none" stroke="#ECEFF4" stroke-width="3" stroke-linecap="round" opacity="0.9">
+    <path d="M86 56 q-7 -10 0 -20 q7 -10 0 -20"/>
+    <path d="M100 56 q-7 -10 0 -20 q7 -10 0 -20"/>
+    <path d="M114 56 q-7 -10 0 -20 q7 -10 0 -20"/>
+  </g>
+  <!-- cup body -->
+  <path d="M64 70 h72 v18 a36 30 0 0 1 -72 0 z" fill="#ECEFF4"/>
+  <!-- cup handle -->
+  <path d="M136 74 a18 18 0 0 1 0 30" fill="none" stroke="#ECEFF4" stroke-width="7"/>
+  <!-- saucer -->
+  <path d="M56 120 h88" stroke="#ECEFF4" stroke-width="6" stroke-linecap="round"/>
+  <!-- BMD -->
+  <text x="100" y="156" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" letter-spacing="4" fill="#ECEFF4" text-anchor="middle">BMD</text>
+</svg>

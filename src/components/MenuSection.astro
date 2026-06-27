@@ -1,0 +1,126 @@
+---
+/**
+ * MENU — the centerpiece. Renders the entire menu from src/data/menu.ts:
+ *  - a sticky, horizontally-scrollable category tab bar (jump links)
+ *  - categories in an elegant two-column "printed menu" layout
+ *  - item rows with a dotted leader and gold prices
+ *
+ * Prices & dishes are edited in src/data/menu.ts, NOT here.
+ */
+import type { Lang } from '../i18n/utils';
+import { useTranslations, localeHref } from '../i18n/utils';
+import { menu, formatPrice } from '../data/menu';
+
+interface Props {
+  lang: Lang;
+  /** true on the dedicated /menu page (renders an <h1> and hides the "open page" link). */
+  standalone?: boolean;
+}
+const { lang, standalone = false } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section id="menu" class="scroll-mt-24 border-t border-white/5 py-20 md:py-28">
+  <div class="container-x">
+    <div class="max-w-2xl" data-reveal>
+      <p class="kicker">{t('menu.kicker')}</p>
+      {standalone ? (
+        <h1 class="section-title mt-3">{t('menu.title')}</h1>
+      ) : (
+        <h2 class="section-title mt-3">{t('menu.title')}</h2>
+      )}
+      <p class="mt-5 text-muted">{t('menu.intro')}</p>
+      {!standalone && (
+        <a href={localeHref(lang, '/menu')} class="link mt-4 inline-flex text-sm font-medium">
+          {t('menu.openPage')} →
+        </a>
+      )}
+    </div>
+  </div>
+
+  <!-- Sticky category tabs (quick jump, scrollable on mobile) -->
+  <div id="menu-tabs" class="sticky top-[var(--header-h)] z-30 mt-8 border-y border-white/8 bg-navy-base/95 backdrop-blur">
+    <div class="container-x">
+      <nav class="no-scrollbar -mx-1 flex gap-1 overflow-x-auto py-2.5" aria-label={t('menu.jumpTo')}>
+        {menu.map((cat) => (
+          <a
+            href={`#cat-${cat.id}`}
+            data-tab={`cat-${cat.id}`}
+            class="whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-medium text-muted transition-colors hover:text-ink data-[active]:bg-gold data-[active]:text-navy-base"
+          >
+            {cat.title[lang]}
+          </a>
+        ))}
+      </nav>
+    </div>
+  </div>
+
+  <div class="container-x mt-10">
+    <p class="mb-8 text-sm text-muted/80">{t('menu.priceNote')}</p>
+
+    <div class="gap-x-14 md:columns-2">
+      {menu.map((cat) => (
+        <div id={`cat-${cat.id}`} data-cat={`cat-${cat.id}`} class="mb-10 scroll-mt-[7.5rem] break-inside-avoid">
+          <div class="flex items-baseline justify-between gap-3">
+            <h3 class="font-serif text-2xl font-bold text-ink">{cat.title[lang]}</h3>
+          </div>
+          {cat.noteKey && (
+            <p class="mt-1 text-xs uppercase tracking-wider text-gold/80">{t(cat.noteKey)}</p>
+          )}
+          <hr class="rule-navy mt-3" />
+          <ul class="mt-3">
+            {cat.items.map((item) => (
+              <li class="flex items-baseline gap-2 py-1.5">
+                <span class="text-[0.97rem] text-ink/95">{item.name}</span>
+                <span class="mx-1 h-0 flex-1 translate-y-[-0.3em] border-b border-dotted border-muted/30" aria-hidden="true"></span>
+                <span class={`whitespace-nowrap text-sm font-medium ${item.price.trim() === '—' ? 'text-muted' : 'text-gold'}`}>
+                  {formatPrice(item.price)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  // Highlight the active category tab while scrolling, and keep it in view.
+  const tabs = Array.from(document.querySelectorAll<HTMLElement>('[data-tab]'));
+  const cats = Array.from(document.querySelectorAll<HTMLElement>('[data-cat]'));
+
+  const setActive = (id: string) => {
+    tabs.forEach((tab) => {
+      const on = tab.dataset.tab === id;
+      if (on) {
+        tab.setAttribute('data-active', '');
+        // Keep the active tab visible by scrolling ONLY the tab bar
+        // horizontally — never the whole page. (element.scrollIntoView would
+        // scroll the page vertically and fight the user's own scrolling.)
+        const nav = tab.parentElement;
+        if (nav) {
+          const tabRect = tab.getBoundingClientRect();
+          const navRect = nav.getBoundingClientRect();
+          const delta =
+            tabRect.left + tabRect.width / 2 - (navRect.left + navRect.width / 2);
+          nav.scrollBy({ left: delta, behavior: 'smooth' });
+        }
+      } else {
+        tab.removeAttribute('data-active');
+      }
+    });
+  };
+
+  if (cats.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
+    );
+    cats.forEach((c) => observer.observe(c));
+  }
+</script>

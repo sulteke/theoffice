@@ -1,0 +1,195 @@
+---
+/**
+ * BASE LAYOUT — the HTML shell shared by every page.
+ * Handles <head> SEO (title, description, canonical, hreflang, Open Graph,
+ * Twitter, JSON-LD), Google Fonts, the header/footer, the floating WhatsApp
+ * button, the mobile action bar, and the small global scripts.
+ */
+import type { Lang } from '../i18n/utils';
+import { localizedPath } from '../i18n/utils';
+import { business, SITE_URL } from '../data/business';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+import MobileActionBar from '../components/MobileActionBar.astro';
+import '../styles/global.css';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** Path to the social-share image (in /public). */
+  ogImage?: string;
+}
+const { lang, title, description, ogImage = '/images/og-image.jpg' } = Astro.props;
+
+const canonical = SITE_URL + Astro.url.pathname;
+const ruUrl = SITE_URL + localizedPath(Astro.url, 'ru');
+const kkUrl = SITE_URL + localizedPath(Astro.url, 'kk');
+const ogImageUrl = SITE_URL + ogImage;
+const ogLocale = lang === 'ru' ? 'ru_RU' : 'kk_KZ';
+const ogLocaleAlt = lang === 'ru' ? 'kk_KZ' : 'ru_RU';
+
+// --- Structured data (Google rich results): Restaurant / BarOrPub ---
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': ['Restaurant', 'BarOrPub'],
+  '@id': `${SITE_URL}/#business`,
+  name: business.fullName,
+  description,
+  url: SITE_URL,
+  telephone: business.phoneTel,
+  image: ogImageUrl,
+  servesCuisine: ['European', 'Bar', 'Hookah lounge'],
+  priceRange: business.priceRange,
+  currenciesAccepted: 'KZT',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Zhansugurova 35',
+    addressLocality: 'Taldykorgan',
+    addressRegion: 'Jetisu',
+    addressCountry: 'KZ',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: business.geo.lat,
+    longitude: business.geo.lng,
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: business.hours.schemaOpens,
+      closes: business.hours.schemaCloses,
+    },
+  ],
+  sameAs: [business.instagram],
+  acceptsReservations: 'True',
+};
+---
+
+<!doctype html>
+<html lang={lang} class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Runs immediately so non-JS fallbacks behave (reveal animations etc.) -->
+    <script is:inline>document.documentElement.classList.remove('no-js');</script>
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0E1729" />
+    <meta name="robots" content="index,follow" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/logo.svg" />
+
+    <!-- Canonical + language alternates (SEO) -->
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="ru" href={ruUrl} />
+    <link rel="alternate" hreflang="kk" href={kkUrl} />
+    <link rel="alternate" hreflang="x-default" href={ruUrl} />
+
+    <!-- Google Fonts: Playfair Display (serif) + Montserrat (sans).
+         No subset param => latin + cyrillic + cyrillic-ext all load. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Playfair+Display:wght@500;700&display=swap"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={business.fullName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale:alternate" content={ogLocaleAlt} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- Structured data -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+
+  <body>
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-gold focus:px-4 focus:py-2 focus:text-navy-base">
+      {lang === 'ru' ? 'Перейти к содержимому' : 'Мазмұнға өту'}
+    </a>
+
+    <Header lang={lang} />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer lang={lang} />
+    <WhatsAppFloat lang={lang} />
+    <MobileActionBar lang={lang} />
+
+    <script>
+      // --- Scroll-reveal: add .is-visible when elements enter the viewport ---
+      const revealEls = document.querySelectorAll('[data-reveal]');
+      if ('IntersectionObserver' in window && revealEls.length) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -10% 0px', threshold: 0.08 }
+        );
+        revealEls.forEach((el) => io.observe(el));
+      } else {
+        revealEls.forEach((el) => el.classList.add('is-visible'));
+      }
+
+      // --- Preserve the current #anchor when switching language ---
+      document.querySelectorAll<HTMLAnchorElement>('[data-lang-link]').forEach((a) => {
+        a.addEventListener('click', () => {
+          if (location.hash) {
+            const base = (a.getAttribute('href') || '').split('#')[0];
+            a.setAttribute('href', base + location.hash);
+          }
+        });
+      });
+
+      // --- Highlight the active section in the header nav ---
+      const navLinks = Array.from(document.querySelectorAll<HTMLElement>('[data-nav-anchor]'));
+      if (navLinks.length) {
+        const byId = new Map(navLinks.map((l) => [l.dataset.navAnchor, l]));
+        const sections = ['about', 'menu', 'events', 'gallery', 'contacts']
+          .map((id) => document.getElementById(id))
+          .filter((el): el is HTMLElement => !!el);
+        if (sections.length) {
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  navLinks.forEach((l) => l.removeAttribute('data-active'));
+                  byId.get(entry.target.id)?.setAttribute('data-active', '');
+                }
+              });
+            },
+            { rootMargin: '-50% 0px -45% 0px', threshold: 0 }
+          );
+          sections.forEach((s) => io.observe(s));
+        }
+      }
+    </script>
+  </body>
+</html>

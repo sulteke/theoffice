@@ -1,0 +1,88 @@
+---
+/**
+ * FOOTER — logo, tagline, quick nav, contacts, social icons, language toggle,
+ * copyright and a small tasteful "office humor" sign-off.
+ */
+import type { Lang } from '../i18n/utils';
+import { useTranslations, localeHref } from '../i18n/utils';
+import { business, telLink, waLink } from '../data/business';
+import { getNavLinks } from '../data/nav';
+import Logo from './Logo.astro';
+import LanguageToggle from './LanguageToggle.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const links = getNavLinks(lang);
+const waHref = waLink(t('wa.general'));
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-white/10 bg-navy-deep">
+  <div class="container-x py-14">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+      <!-- Brand -->
+      <div class="lg:col-span-2">
+        <Logo lang={lang} />
+        <p class="mt-5 max-w-sm font-serif text-lg italic text-ink/90">
+          «{business.taglines[lang]}»
+        </p>
+        <div class="mt-5 flex items-center gap-3">
+          <a href={business.instagram} target="_blank" rel="noopener" aria-label="Instagram"
+            class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-ink transition-colors hover:text-gold">
+            <Icon name="instagram" size={22} />
+          </a>
+          <a href={waHref} target="_blank" rel="noopener" aria-label={t('cta.whatsapp')}
+            class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-ink transition-colors hover:text-gold">
+            <Icon name="whatsapp" size={22} />
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick nav -->
+      <nav aria-label={t('footer.nav')}>
+        <h3 class="text-xs uppercase tracking-widest text-muted">{t('footer.nav')}</h3>
+        <ul class="mt-4 space-y-2.5">
+          {links.map((link) => (
+            <li>
+              <a href={link.href} class="text-sm text-ink/85 transition-colors hover:text-gold">{t(link.labelKey)}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- Contacts -->
+      <div>
+        <h3 class="text-xs uppercase tracking-widest text-muted">{t('footer.contacts')}</h3>
+        <ul class="mt-4 space-y-3 text-sm text-ink/85">
+          <li class="flex items-start gap-2.5">
+            <Icon name="pin" size={18} class="mt-0.5 shrink-0 text-gold" />
+            <span>{business.address[lang]}</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <Icon name="clock" size={18} class="mt-0.5 shrink-0 text-gold" />
+            <span>{business.hours.everyDay[lang]}, {business.hours.display}</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <Icon name="phone" size={18} class="mt-0.5 shrink-0 text-gold" />
+            <a href={telLink} class="hover:text-gold">{business.phoneDisplay}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Office-humor sign-off -->
+    <p class="mt-12 border-t border-white/8 pt-7 text-center font-serif text-base italic text-gold/85">
+      {t('footer.humor')}
+    </p>
+
+    <!-- Bottom row -->
+    <div class="mt-6 flex flex-col items-center justify-between gap-4 text-sm text-muted sm:flex-row">
+      <p>© {year} {business.fullName}. {t('footer.rights')}</p>
+      <LanguageToggle lang={lang} />
+    </div>
+  </div>
+</footer>
