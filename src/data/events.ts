@@ -23,7 +23,7 @@ export interface EventItem {
 export const events: EventItem[] = [
   {
     date: '2026-07-03',
-    title: { ru: 'Живой концерт', kk: ' концерт' },
+    title: { ru: 'Живой концерт', kk: 'Тірі концерт' },
     performer: 'Ruhanyat Band',
     note: {
       ru: 'Любимые хиты вживую. Старт в 21:00.',
