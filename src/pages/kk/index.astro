@@ -12,6 +12,7 @@ import Events from '../../components/Events.astro';
 import Gallery from '../../components/Gallery.astro';
 import Reservation from '../../components/Reservation.astro';
 import Contact from '../../components/Contact.astro';
+import Reviews from '../../components/Reviews.astro';
 import { useTranslations } from '../../i18n/utils';
 
 const lang = 'kk' as const;
@@ -21,10 +22,11 @@ const t = useTranslations(lang);
 <BaseLayout lang={lang} title={t('seo.home.title')} description={t('seo.home.desc')}>
   <Hero lang={lang} />
   <About lang={lang} />
-  <MenuSection lang={lang} />
   <Hookah lang={lang} />
+  <MenuSection lang={lang} />
   <Events lang={lang} />
   <Gallery lang={lang} />
   <Reservation lang={lang} />
   <Contact lang={lang} />
+  <Reviews lang={lang} />
 </BaseLayout>

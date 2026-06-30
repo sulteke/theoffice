@@ -164,7 +164,7 @@ const WEB3FORMS_ACCESS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY';
     const cart = (window as any).OfficeCart;
     let finalMsg = msg;
     if (attach?.checked && cart && cart.count() > 0) {
-      const block = `${form.dataset.orderTitle || 'Заказ'}:\n${cart.orderLines()}\n${form.dataset.totalLabel || 'Итого'}: ${cart.money(cart.total())}`;
+      const block = `${form.dataset.orderTitle || 'Заказ'}:\n${cart.orderText()}`;
       finalMsg = `${msg}\n\n${block}`;
       data.set('Заказ', block); // include the order in the email backup too
     }

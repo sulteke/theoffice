@@ -26,6 +26,8 @@ const t = useTranslations(lang);
   id="office-cart"
   data-wa={business.whatsapp}
   data-hello={t('cart.waHello')}
+  data-subtotal-label={t('cart.subtotal')}
+  data-service-label={t('cart.service')}
   data-total-label={t('cart.total')}
   data-remove-label={t('cart.remove')}
 >
@@ -54,9 +56,19 @@ const t = useTranslations(lang);
     </div>
 
     <footer class="border-t border-white/10 p-5">
-      <div class="flex items-baseline justify-between">
-        <span class="text-sm uppercase tracking-widest text-muted">{t('cart.total')}</span>
-        <span id="cart-total" class="font-serif text-2xl font-bold text-gold">0 ₸</span>
+      <div class="space-y-1.5">
+        <div class="flex items-baseline justify-between text-sm text-muted">
+          <span>{t('cart.subtotal')}</span>
+          <span id="cart-subtotal">0 ₸</span>
+        </div>
+        <div class="flex items-baseline justify-between text-sm text-muted">
+          <span>{t('cart.service')}</span>
+          <span id="cart-service">0 ₸</span>
+        </div>
+        <div class="flex items-baseline justify-between border-t border-white/10 pt-2">
+          <span class="text-sm uppercase tracking-widest text-muted">{t('cart.total')}</span>
+          <span id="cart-total" class="font-serif text-2xl font-bold text-gold">0 ₸</span>
+        </div>
       </div>
       <p class="mt-2 text-xs text-muted">{t('cart.note')}</p>
       <a id="cart-checkout" href="#" target="_blank" rel="noopener" class="btn btn-primary mt-4 w-full aria-disabled:pointer-events-none aria-disabled:opacity-50" aria-disabled="true">
@@ -86,8 +98,13 @@ const t = useTranslations(lang);
   const root = document.getElementById('office-cart');
   const wa = root?.dataset.wa || '';
   const hello = root?.dataset.hello || '';
+  const subtotalLabel = root?.dataset.subtotalLabel || 'Подытог';
+  const serviceLabel = root?.dataset.serviceLabel || 'Обслуживание 10%';
   const totalLabel = root?.dataset.totalLabel || 'Итого';
   const removeLabel = root?.dataset.removeLabel || 'Удалить';
+
+  // Service charge added to every order.
+  const SERVICE_RATE = 0.1;
 
   let items: Line[] = load();
 
@@ -104,7 +121,9 @@ const t = useTranslations(lang);
     render();
   }
   const money = (n: number) => `${n.toLocaleString('ru-RU')} ₸`;
-  const total = () => items.reduce((s, i) => s + i.price * i.qty, 0);
+  const subtotal = () => items.reduce((s, i) => s + i.price * i.qty, 0);
+  const service = () => Math.round(subtotal() * SERVICE_RATE);
+  const total = () => subtotal() + service();
   const count = () => items.reduce((s, i) => s + i.qty, 0);
 
   function add(id: string, name: string, price: number) {
@@ -130,8 +149,18 @@ const t = useTranslations(lang);
   function orderLines(): string {
     return items.map((i) => `• ${i.name} × ${i.qty} — ${money(i.price * i.qty)}`).join('\n');
   }
+  // Full order block: items + subtotal + 10% service + total (reused by the
+  // reservation form too).
+  function orderText(): string {
+    return [
+      orderLines(),
+      `${subtotalLabel}: ${money(subtotal())}`,
+      `${serviceLabel}: ${money(service())}`,
+      `${totalLabel}: ${money(total())}`,
+    ].join('\n');
+  }
   function orderMessage(): string {
-    return `${hello}\n${orderLines()}\n${totalLabel}: ${money(total())}`;
+    return `${hello}\n${orderText()}`;
   }
 
   // --- Panel open/close ---
@@ -169,9 +198,13 @@ const t = useTranslations(lang);
   function render() {
     const linesEl = document.getElementById('cart-lines');
     const emptyEl = document.getElementById('cart-empty');
+    const subtotalEl = document.getElementById('cart-subtotal');
+    const serviceEl = document.getElementById('cart-service');
     const totalEl = document.getElementById('cart-total');
     const checkout = document.getElementById('cart-checkout') as HTMLAnchorElement | null;
 
+    if (subtotalEl) subtotalEl.textContent = money(subtotal());
+    if (serviceEl) serviceEl.textContent = money(service());
     if (totalEl) totalEl.textContent = money(total());
 
     // Header / anywhere badges
@@ -245,9 +278,12 @@ const t = useTranslations(lang);
   // Expose for the reservation form.
   (window as any).OfficeCart = {
     getItems: () => items.slice(),
+    subtotal,
+    service,
     total,
     count,
     orderLines,
+    orderText,
     money,
     open,
   };

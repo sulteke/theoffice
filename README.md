@@ -55,7 +55,8 @@ the quotes `"..."`** and keep the commas.
 | **Menu dishes & prices** | `src/data/menu.ts` |
 | **Hookah price (7000 ₸) & the 4 mixes** | `src/data/hookah.ts` |
 | **Phone, WhatsApp, address, hours, Instagram, taglines** | `src/data/business.ts` |
-| **Upcoming events (Афиша)** | `src/data/events.ts` |
+| **Celebrations slideshow (Праздники)** | `src/data/celebrations.ts` |
+| **Guest reviews (Отзывы)** | `src/data/reviews.ts` |
 | **Gallery photo captions** | `src/data/gallery.ts` |
 | **All other text — buttons, titles, intros (Russian)** | `src/i18n/ru.ts` |
 | **All other text — Kazakh** | `src/i18n/kk.ts` |
@@ -75,6 +76,8 @@ the cart (🛒 in the header), adjust quantities, and tap **"Оформить п
 WhatsApp"** to send you the order — or tick **"Добавить мой заказ из корзины"** on
 the booking form to attach the order to a table reservation. Nothing is charged;
 it's a pre-order you confirm by WhatsApp/phone. It works out of the box — no setup.
+A **10% service charge (обслуживание)** is added automatically to the cart total.
+To change the 10% or turn it off, edit `SERVICE_RATE` in `src/components/Cart.astro`.
 
 ### Change the phone number / address / hours
 All contact details are in **one** place: `src/data/business.ts`. Change them

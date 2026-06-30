@@ -55,11 +55,17 @@ Replace any/all. Captions (alt text) are edited in `src/data/gallery.ts`.
 > You can add MORE photos: drop e.g. `gallery-11.jpg` into the folder, then add
 > a line for it in `src/data/gallery.ts` (copy an existing line).
 
-## 4) Events / Afisha — no photos needed
-The events list is now **text-only** (date · title · performer · note), so there
-are no event images to replace. Add or edit upcoming events in
-`src/data/events.ts`. (The old `event-01…04.jpg` files are no longer used — you
-can ignore or delete them.)
+## 4) Celebrations slideshow (Праздники section)
+The "Праздники" section shows a **rotating slideshow of 4 photos** of parties
+you've hosted (so visitors see you really do host celebrations). Replace these
+with real party photos; edit the captions in `src/data/celebrations.ts`.
+
+| File | Recommended size | Aspect |
+|------|------------------|--------|
+| `src/assets/images/event-01.jpg` | 1200 × 900 | 4:3 |
+| `src/assets/images/event-02.jpg` | 1200 × 900 | 4:3 |
+| `src/assets/images/event-03.jpg` | 1200 × 900 | 4:3 |
+| `src/assets/images/event-04.jpg` | 1200 × 900 | 4:3 |
 
 ## 5) Social-share image (shown when the link is sent on WhatsApp/Instagram/etc.)
 | File | Required size | Aspect | Notes |

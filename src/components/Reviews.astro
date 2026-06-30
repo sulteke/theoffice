@@ -1,0 +1,57 @@
+---
+/**
+ * REVIEWS / ОТЗЫВЫ — guest testimonials with star ratings (bottom of page).
+ * Edit the reviews in src/data/reviews.ts.
+ */
+import type { Lang } from '../i18n/utils';
+import { useTranslations } from '../i18n/utils';
+import { reviews } from '../data/reviews';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+// Link for guests to leave their own review (opens 2GIS search for the venue).
+const reviewHref = `https://2gis.kz/almaty/search/${encodeURIComponent('THE OFFICE Талдыкорган')}`;
+---
+
+<section id="reviews" class="scroll-mt-24 border-t border-white/5 py-20 md:py-28">
+  <div class="container-x">
+    <div class="max-w-2xl" data-reveal>
+      <p class="kicker">{t('reviews.kicker')}</p>
+      <h2 class="section-title mt-3">{t('reviews.title')}</h2>
+      <p class="mt-5 text-muted">{t('reviews.intro')}</p>
+    </div>
+
+    <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {reviews.map((r, i) => (
+        <li
+          data-reveal
+          style={`--reveal-delay:${(i % 3) * 90}ms`}
+          class="flex flex-col rounded-2xl border border-white/8 bg-navy-elevated p-6"
+        >
+          <div class="flex gap-0.5" aria-label={`${r.rating} / 5`}>
+            {Array.from({ length: 5 }).map((_, s) => (
+              <Icon name="star" size={16} class={s < r.rating ? 'text-gold' : 'text-muted/30'} />
+            ))}
+          </div>
+          <p class="mt-3 flex-1 text-ink/90">«{r.text}»</p>
+          <div class="mt-4 flex items-center justify-between border-t border-white/8 pt-3">
+            <span class="font-medium text-ink">{r.author}</span>
+            {r.source && <span class="text-xs uppercase tracking-wider text-muted">{r.source}</span>}
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    <div class="mt-8" data-reveal>
+      <a href={reviewHref} target="_blank" rel="noopener" class="btn btn-secondary text-sm">
+        <Icon name="star" size={16} />
+        {t('reviews.cta')}
+      </a>
+    </div>
+  </div>
+</section>
