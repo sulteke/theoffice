@@ -201,6 +201,7 @@ export const kk: Record<keyof typeof ru, string> = {
   'reviews.title': 'Қонақтар не дейді',
   'reviews.intro': 'Кештері мен мерекелерін бізге сеніп тапсырады — міне бірнеше пікір.', // TODO: verify KZ
   'reviews.cta': '2ГИС-те пікір қалдыру',
+  'reviews.more': 'Тағы көрсету',
 
   /* ---- SEO (page titles & descriptions) ---- */
   'seo.home.title': 'THE OFFICE Lounge Bar — Талдықорғандағы лаунж-бар',

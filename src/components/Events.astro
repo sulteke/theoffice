@@ -1,8 +1,11 @@
 ---
 /**
- * ПРАЗДНИКИ (Celebrations) — showcases parties the venue has hosted as a
- * rotating slideshow (social proof), plus a WhatsApp "book a party" CTA.
- * Slides & captions are edited in src/data/celebrations.ts.
+ * ПРАЗДНИКИ (Celebrations) — a continuously scrolling strip of photos from
+ * parties the venue has hosted (social proof), plus a WhatsApp "book a party"
+ * CTA. Slides & captions are edited in src/data/celebrations.ts.
+ *
+ * The strip auto-scrolls horizontally (CSS marquee, no JS), pauses on hover,
+ * and stops for visitors who prefer reduced motion (they can scroll it by hand).
  */
 import { Image } from 'astro:assets';
 import type { Lang } from '../i18n/utils';
@@ -17,68 +20,55 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const partyHref = waLink(t('wa.party'));
+
+// Duplicate the list so the marquee can loop seamlessly.
+const strip = [...celebrations, ...celebrations];
 ---
 
-<section id="events" class="scroll-mt-24 border-t border-white/5 bg-navy-elevated/40 py-20 md:py-28">
+<section id="events" class="scroll-mt-24 overflow-hidden border-t border-white/5 bg-navy-elevated/40 py-20 md:py-28">
   <div class="container-x">
     <div class="max-w-2xl" data-reveal>
       <p class="kicker">{t('events.kicker')}</p>
       <h2 class="section-title mt-3">{t('events.title')}</h2>
       <p class="mt-5 text-muted">{t('events.intro')}</p>
     </div>
+  </div>
 
-    <!-- Rotating slideshow of past celebrations -->
-    <div
-      id="celeb"
-      class="relative mt-10 overflow-hidden rounded-2xl border border-white/10 shadow-card"
-      data-reveal
-      role="group"
-      aria-roledescription="carousel"
-      aria-label={t('events.hostedLabel')}
-    >
-      <div class="relative aspect-[16/10] sm:aspect-[16/7]">
-        {celebrations.map((c, i) => (
-          <figure
-            class="celeb-slide absolute inset-0 transition-opacity duration-700"
-            data-slide={i}
-            style={i === 0 ? 'opacity:1' : 'opacity:0'}
-            aria-hidden={i === 0 ? 'false' : 'true'}
-          >
-            <Image
-              src={c.src}
-              alt={c.caption[lang]}
-              widths={[640, 1000, 1600]}
-              sizes="(min-width: 1024px) 1100px, 100vw"
-              loading={i === 0 ? 'eager' : 'lazy'}
-              class="h-full w-full object-cover"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-navy-deep/85 via-navy-deep/25 to-transparent"></div>
-            <figcaption class="absolute bottom-0 left-0 p-5 sm:p-7">
-              <span class="kicker">{t('events.hostedLabel')}</span>
-              <p class="mt-1 font-serif text-2xl font-bold text-ink sm:text-3xl">{c.caption[lang]}</p>
-            </figcaption>
-          </figure>
-        ))}
-      </div>
-
-      <!-- Prev / next -->
-      <button data-celeb-prev type="button" class="absolute left-3 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-navy-deep/70 text-ink backdrop-blur hover:bg-navy-deep/90" aria-label={t('gallery.prev')}>
-        <Icon name="arrow-left" size={22} />
-      </button>
-      <button data-celeb-next type="button" class="absolute right-3 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-navy-deep/70 text-ink backdrop-blur hover:bg-navy-deep/90" aria-label={t('gallery.next')}>
-        <Icon name="arrow-right" size={22} />
-      </button>
-
-      <!-- Dots -->
-      <div class="absolute bottom-4 right-4 flex gap-2">
-        {celebrations.map((_, i) => (
-          <button data-celeb-dot={i} type="button" class={`h-2.5 w-2.5 rounded-full transition-colors ${i === 0 ? 'bg-gold' : 'bg-white/40'}`} aria-label={`${i + 1}`}></button>
-        ))}
-      </div>
+  <!-- Continuously scrolling strip of past celebrations -->
+  <div
+    class="celeb-viewport mt-10 overflow-hidden"
+    data-reveal
+    role="group"
+    aria-roledescription="carousel"
+    aria-label={t('events.hostedLabel')}
+  >
+    <div class="celeb-track flex w-max">
+      {strip.map((c, i) => (
+        <figure
+          class="relative mr-4 h-60 w-72 shrink-0 overflow-hidden rounded-2xl border border-white/10 shadow-card sm:h-72 sm:w-96"
+          aria-hidden={i >= celebrations.length ? 'true' : 'false'}
+        >
+          <Image
+            src={c.src}
+            alt={i < celebrations.length ? c.caption[lang] : ''}
+            widths={[320, 480, 640]}
+            sizes="384px"
+            loading="lazy"
+            class="h-full w-full object-cover"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/20 to-transparent"></div>
+          <figcaption class="absolute inset-x-0 bottom-0 p-4">
+            <span class="kicker text-[0.7rem]">{t('events.hostedLabel')}</span>
+            <p class="mt-0.5 font-serif text-xl font-bold text-ink">{c.caption[lang]}</p>
+          </figcaption>
+        </figure>
+      ))}
     </div>
+  </div>
 
+  <div class="container-x">
     <!-- Book a private party CTA -->
-    <div class="mt-10 flex flex-col items-center gap-3 rounded-2xl border border-gold/20 bg-gold/5 p-8 text-center" data-reveal>
+    <div class="mt-12 flex flex-col items-center gap-3 rounded-2xl border border-gold/20 bg-gold/5 p-8 text-center" data-reveal>
       <p class="max-w-xl text-muted">{t('events.private.desc')}</p>
       <a href={partyHref} target="_blank" rel="noopener" class="btn btn-primary mt-1">
         <Icon name="whatsapp" size={20} />
@@ -88,48 +78,21 @@ const partyHref = waLink(t('wa.party'));
   </div>
 </section>
 
-<script>
-  // Celebrations carousel: auto-rotate, dots, prev/next, swipe, hover-pause.
-  const root = document.getElementById('celeb');
-  if (root) {
-    const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-slide]'));
-    const dots = Array.from(root.querySelectorAll<HTMLElement>('[data-celeb-dot]'));
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let idx = 0;
-    let timer: number | undefined;
-
-    const show = (n: number) => {
-      idx = (n + slides.length) % slides.length;
-      slides.forEach((s, i) => {
-        s.style.opacity = i === idx ? '1' : '0';
-        s.setAttribute('aria-hidden', i === idx ? 'false' : 'true');
-      });
-      dots.forEach((d, i) => {
-        d.classList.toggle('bg-gold', i === idx);
-        d.classList.toggle('bg-white/40', i !== idx);
-      });
-    };
-    const next = () => show(idx + 1);
-    const prev = () => show(idx - 1);
-    const start = () => { if (!reduce && slides.length > 1) timer = window.setInterval(next, 4500); };
-    const restart = () => { window.clearInterval(timer); start(); };
-
-    root.querySelector('[data-celeb-next]')?.addEventListener('click', () => { next(); restart(); });
-    root.querySelector('[data-celeb-prev]')?.addEventListener('click', () => { prev(); restart(); });
-    dots.forEach((d, i) => d.addEventListener('click', () => { show(i); restart(); }));
-    root.addEventListener('mouseenter', () => window.clearInterval(timer));
-    root.addEventListener('mouseleave', start);
-
-    // Touch swipe
-    let x0: number | null = null;
-    root.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
-    root.addEventListener('touchend', (e) => {
-      if (x0 === null) return;
-      const dx = e.changedTouches[0].clientX - x0;
-      if (Math.abs(dx) > 40) { dx < 0 ? next() : prev(); restart(); }
-      x0 = null;
-    });
-
-    start();
+<style>
+  /* Continuous horizontal auto-scroll. Two copies of the list sit side by side
+     and the track slides left by exactly one copy (-50%), then loops. */
+  .celeb-track {
+    animation: celeb-scroll 36s linear infinite;
   }
-</script>
+  .celeb-viewport:hover .celeb-track {
+    animation-play-state: paused;
+  }
+  @keyframes celeb-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .celeb-track { animation: none; }
+    .celeb-viewport { overflow-x: auto; }
+  }
+</style>

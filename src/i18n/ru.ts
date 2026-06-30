@@ -196,6 +196,7 @@ export const ru = {
   'reviews.title': 'Что говорят гости',
   'reviews.intro': 'Нам доверяют свои вечера и праздники — вот лишь несколько отзывов.',
   'reviews.cta': 'Оставить отзыв в 2ГИС',
+  'reviews.more': 'Показать ещё',
 
   /* ---- SEO (page titles & descriptions) ---- */
   'seo.home.title': 'THE OFFICE Lounge Bar — лаунж-бар в Талдыкоргане',

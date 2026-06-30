@@ -71,8 +71,8 @@ export const business = {
    * (central Taldykorgan) and should be corrected before launch.
    */
   geo: {
-    lat: 45.0146,
-    lng: 78.4001,
+    lat: 45.0142,
+    lng: 78.3928,
   },
 
   /**

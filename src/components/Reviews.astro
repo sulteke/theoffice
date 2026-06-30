@@ -29,9 +29,10 @@ const reviewHref = `https://2gis.kz/almaty/search/${encodeURIComponent('THE OFFI
     <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {reviews.map((r, i) => (
         <li
-          data-reveal
+          data-reveal={i < 3 ? '' : undefined}
+          data-review-extra={i >= 3 ? '' : undefined}
           style={`--reveal-delay:${(i % 3) * 90}ms`}
-          class="flex flex-col rounded-2xl border border-white/8 bg-navy-elevated p-6"
+          class={`flex flex-col rounded-2xl border border-white/8 bg-navy-elevated p-6 ${i >= 3 ? 'hidden' : ''}`}
         >
           <div class="flex gap-0.5" aria-label={`${r.rating} / 5`}>
             {Array.from({ length: 5 }).map((_, s) => (
@@ -47,11 +48,25 @@ const reviewHref = `https://2gis.kz/almaty/search/${encodeURIComponent('THE OFFI
       ))}
     </ul>
 
-    <div class="mt-8" data-reveal>
-      <a href={reviewHref} target="_blank" rel="noopener" class="btn btn-secondary text-sm">
+    <div class="mt-8 flex flex-col items-center gap-3" data-reveal>
+      {reviews.length > 3 && (
+        <button type="button" data-reviews-more class="btn btn-secondary text-sm">
+          {t('reviews.more')}
+        </button>
+      )}
+      <a href={reviewHref} target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-sm text-accent-bright hover:underline">
         <Icon name="star" size={16} />
         {t('reviews.cta')}
       </a>
     </div>
   </div>
 </section>
+
+<script>
+  // "Show more" reveals the hidden reviews, then removes itself.
+  const moreBtn = document.querySelector('[data-reviews-more]');
+  moreBtn?.addEventListener('click', () => {
+    document.querySelectorAll('[data-review-extra]').forEach((el) => el.classList.remove('hidden'));
+    moreBtn.remove();
+  });
+</script>
