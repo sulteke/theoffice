@@ -10,6 +10,7 @@
 import type { Lang } from '../i18n/utils';
 import { useTranslations, localeHref } from '../i18n/utils';
 import { menu, formatPrice } from '../data/menu';
+import Icon from './Icon.astro';
 
 interface Props {
   lang: Lang;
@@ -69,15 +70,34 @@ const t = useTranslations(lang);
           )}
           <hr class="rule-navy mt-3" />
           <ul class="mt-3">
-            {cat.items.map((item) => (
-              <li class="flex items-baseline gap-2 py-1.5">
-                <span class="text-[0.97rem] text-ink/95">{item.name}</span>
-                <span class="mx-1 h-0 flex-1 translate-y-[-0.3em] border-b border-dotted border-muted/30" aria-hidden="true"></span>
-                <span class={`whitespace-nowrap text-sm font-medium ${item.price.trim() === '—' ? 'text-muted' : 'text-gold'}`}>
-                  {formatPrice(item.price)}
-                </span>
-              </li>
-            ))}
+            {cat.items.map((item) => {
+              // Unit price for the cart = first number (handles "2430/1890" and "—").
+              const unit = item.price.trim() === '—'
+                ? 0
+                : parseInt(item.price.split('/')[0].replace(/[^\d]/g, ''), 10) || 0;
+              return (
+                <li class="flex items-baseline gap-2 py-1.5">
+                  <span class="text-[0.97rem] text-ink/95">{item.name}</span>
+                  <span class="mx-1 h-0 flex-1 translate-y-[-0.3em] border-b border-dotted border-muted/30" aria-hidden="true"></span>
+                  <span class={`whitespace-nowrap text-sm font-medium ${item.price.trim() === '—' ? 'text-muted' : 'text-gold'}`}>
+                    {formatPrice(item.price)}
+                  </span>
+                  {unit > 0 && (
+                    <button
+                      type="button"
+                      data-add-to-cart
+                      data-id={`${cat.id}:${item.name}`}
+                      data-name={item.name}
+                      data-price={unit}
+                      class="ml-1 inline-flex h-7 w-7 shrink-0 self-center items-center justify-center rounded-full border border-gold/40 text-gold transition-colors hover:bg-gold hover:text-navy-base"
+                      aria-label={`${t('cart.add')}: ${item.name}`}
+                    >
+                      <Icon name="plus" size={15} />
+                    </button>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
       ))}

@@ -89,6 +89,8 @@ const jobs = [
   () => toJpg(svg(1920, 1080, { label: 'HERO', sub: 'replace with venue photo / video', big: true }), `${SRC}/hero.jpg`, 80),
   // About
   () => toJpg(svg(1200, 1400, { label: 'ATMOSPHERE', sub: 'interior photo' }), `${SRC}/about.jpg`),
+  // Hookah (featured section)
+  () => toJpg(svg(1200, 1000, { label: 'HOOKAH', sub: 'hookah photo' }), `${SRC}/hookah.jpg`),
   // Gallery (mixed aspect ratios for a masonry grid)
   () => toJpg(svg(1200, 1600, { label: 'INTERIOR', sub: 'gallery 01' }), `${SRC}/gallery-01.jpg`),
   () => toJpg(svg(1200, 900, { label: 'FOOD', sub: 'gallery 02' }), `${SRC}/gallery-02.jpg`),

@@ -19,13 +19,14 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const { lat, lng } = business.geo;
-// Bounding box around the pin for the OpenStreetMap embed.
-const d = 0.012;
+// Bounding box around the pin for the OpenStreetMap embed (smaller = closer zoom).
+const d = 0.008;
 const bbox = `${(lng - d).toFixed(4)},${(lat - d / 2).toFixed(4)},${(lng + d).toFixed(4)},${(lat + d / 2).toFixed(4)}`;
 const osmSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
 
-// "Get directions" — opens 2GIS (preferred in KZ) searching the address.
-const directionsHref = `https://2gis.kz/taldykorgan/search/${encodeURIComponent(business.addressShort.ru + ', Талдыкорган')}`;
+// "Get directions" — opens 2GIS (the #1 map app in Kazakhstan), searching the
+// address. NOTE: Taldykorgan lives under 2GIS's "almaty" regional slug.
+const directionsHref = `https://2gis.kz/almaty/search/${encodeURIComponent(business.addressShort.ru + ', Талдыкорган')}`;
 const waHref = waLink(t('wa.general'));
 
 const infoRows = [

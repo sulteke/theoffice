@@ -31,6 +31,11 @@ site come alive. You don't need a designer — just drop your photos in with the
 |------|------------------|--------|-------|
 | `src/assets/images/about.jpg` | 1200 × 1400 | ~6:7 (portrait) | Atmospheric interior or a signature dish. |
 
+## 2b) Hookah photo (Кальян section)
+| File | Recommended size | Aspect | Notes |
+|------|------------------|--------|-------|
+| `src/assets/images/hookah.jpg` | 1200 × 1000 | ~6:5 | A great shot of a prepared hookah. The price (7000 ₸) and the 4 mixes are edited in `src/data/hookah.ts`. |
+
 ## 3) Gallery (10 photos — mix of interior, food, music, events)
 Replace any/all. Captions (alt text) are edited in `src/data/gallery.ts`.
 
@@ -50,16 +55,11 @@ Replace any/all. Captions (alt text) are edited in `src/data/gallery.ts`.
 > You can add MORE photos: drop e.g. `gallery-11.jpg` into the folder, then add
 > a line for it in `src/data/gallery.ts` (copy an existing line).
 
-## 4) Event thumbnails (used by the Afisha / Events list)
-The events list cycles through these 4 images. Replace with real performance/
-party photos.
-
-| File | Recommended size | Aspect |
-|------|------------------|--------|
-| `src/assets/images/event-01.jpg` | 1200 × 900 | 4:3 |
-| `src/assets/images/event-02.jpg` | 1200 × 900 | 4:3 |
-| `src/assets/images/event-03.jpg` | 1200 × 900 | 4:3 |
-| `src/assets/images/event-04.jpg` | 1200 × 900 | 4:3 |
+## 4) Events / Afisha — no photos needed
+The events list is now **text-only** (date · title · performer · note), so there
+are no event images to replace. Add or edit upcoming events in
+`src/data/events.ts`. (The old `event-01…04.jpg` files are no longer used — you
+can ignore or delete them.)
 
 ## 5) Social-share image (shown when the link is sent on WhatsApp/Instagram/etc.)
 | File | Required size | Aspect | Notes |
@@ -69,7 +69,7 @@ party photos.
 ## 6) Logo & favicon
 | File | Notes |
 |------|-------|
-| `public/logo.svg` | The circular emblem (coffee cup + "BMD"). Replace with your real logo. SVG is best; if you only have a PNG, save it as `public/logo.png` and change `/logo.svg` → `/logo.png` inside `src/components/Logo.astro` (and `apple-touch-icon` in `src/layouts/BaseLayout.astro`). Square shape recommended. |
+| `public/logo.jpg` | The circular logo shown in the header & footer. Replace with your real logo (a square image works best — it's displayed as a circle). If you use a different file name/format, update `/logo.jpg` inside `src/components/Logo.astro` and the `apple-touch-icon` line in `src/layouts/BaseLayout.astro`. |
 | `public/favicon.svg` | The little browser-tab icon ("TO" monogram). Optional to change. |
 
 ---

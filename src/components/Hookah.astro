@@ -1,0 +1,74 @@
+---
+/**
+ * HOOKAH — featured section with a photo and the signature mixes.
+ * All mixes are one price (HOOKAH_PRICE). Edit price/mixes in src/data/hookah.ts.
+ * Each mix has a "+" button that adds it to the pre-order cart.
+ */
+import { Image } from 'astro:assets';
+import type { Lang } from '../i18n/utils';
+import { useTranslations } from '../i18n/utils';
+import { hookahMixes, hookahImage, HOOKAH_PRICE } from '../data/hookah';
+import { formatPrice } from '../data/menu';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const priceDisplay = formatPrice(HOOKAH_PRICE);
+---
+
+<section id="hookah" class="scroll-mt-24 border-t border-white/5 bg-navy-elevated/40 py-20 md:py-28">
+  <div class="container-x">
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
+      <!-- Photo -->
+      <div data-reveal class="relative overflow-hidden rounded-2xl shadow-card">
+        <Image
+          src={hookahImage}
+          alt={t('hookah.imageAlt')}
+          widths={[480, 720, 1000]}
+          sizes="(min-width: 1024px) 45vw, 90vw"
+          loading="lazy"
+          class="h-full w-full object-cover"
+        />
+        <div class="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10"></div>
+        <!-- Price badge -->
+        <span class="absolute left-4 top-4 rounded-full bg-navy-deep/85 px-4 py-1.5 font-serif text-lg font-bold text-gold backdrop-blur">
+          {priceDisplay}
+        </span>
+      </div>
+
+      <!-- Text + mixes -->
+      <div data-reveal style="--reveal-delay:120ms">
+        <p class="kicker">{t('hookah.kicker')}</p>
+        <h2 class="section-title mt-3">{t('hookah.title')}</h2>
+        <p class="mt-5 text-muted">{t('hookah.intro')}</p>
+
+        <ul class="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {hookahMixes.map((mix) => (
+            <li class="flex items-center justify-between gap-3 rounded-xl border border-white/8 bg-navy-elevated p-4">
+              <div class="min-w-0">
+                <p class="truncate text-ink">{mix.name[lang]}</p>
+                <p class="text-xs font-medium text-gold">{priceDisplay}</p>
+              </div>
+              <button
+                type="button"
+                data-add-to-cart
+                data-id={`hookah:${mix.name.ru}`}
+                data-name={`Кальян — ${mix.name.ru}`}
+                data-price={HOOKAH_PRICE}
+                class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold/12 text-gold transition-colors hover:bg-gold hover:text-navy-base"
+                aria-label={`${t('cart.add')}: ${mix.name[lang]}`}
+              >
+                <Icon name="plus" size={18} />
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <p class="mt-4 text-sm text-muted">{t('hookah.flavorsNote')}</p>
+      </div>
+    </div>
+  </div>
+</section>

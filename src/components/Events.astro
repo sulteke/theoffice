@@ -4,17 +4,11 @@
  * lists upcoming events (from src/data/events.ts) and a WhatsApp "book a party"
  * CTA with a pre-filled message.
  */
-import { Image } from 'astro:assets';
 import type { Lang } from '../i18n/utils';
 import { useTranslations } from '../i18n/utils';
 import { business, waLink } from '../data/business';
 import { getUpcomingEvents, formatEventDate, eventDay, eventMonthShort } from '../data/events';
 import Icon from './Icon.astro';
-
-import ev1 from '../assets/images/event-01.jpg';
-import ev2 from '../assets/images/event-02.jpg';
-import ev3 from '../assets/images/event-03.jpg';
-import ev4 from '../assets/images/event-04.jpg';
 
 interface Props {
   lang: Lang;
@@ -23,7 +17,6 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const upcoming = getUpcomingEvents();
-const thumbs = [ev1, ev2, ev3, ev4];
 const partyHref = waLink(t('wa.party'));
 ---
 
@@ -70,15 +63,6 @@ const partyHref = waLink(t('wa.party'));
               <span class="font-serif text-2xl font-bold leading-none">{eventDay(ev.date)}</span>
               <span class="mt-1 text-[0.65rem] uppercase tracking-widest">{eventMonthShort(ev.date, lang)}</span>
             </div>
-            <!-- Thumbnail -->
-            <Image
-              src={thumbs[i % thumbs.length]}
-              alt=""
-              widths={[120, 220]}
-              sizes="110px"
-              loading="lazy"
-              class="hidden h-auto w-28 shrink-0 object-cover sm:block"
-            />
             <!-- Details -->
             <div class="min-w-0 flex-1 py-3 pr-4">
               <p class="text-xs font-medium uppercase tracking-wider text-muted">{formatEventDate(ev.date, lang)}</p>

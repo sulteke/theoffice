@@ -20,6 +20,8 @@ const features: { icon: string; title: TranslationKey; desc: TranslationKey }[] 
   { icon: 'hookah', title: 'about.feature.hookah.title', desc: 'about.feature.hookah.desc' },
   { icon: 'music', title: 'about.feature.music.title', desc: 'about.feature.music.desc' },
   { icon: 'gift', title: 'about.feature.parties.title', desc: 'about.feature.parties.desc' },
+  { icon: 'tv', title: 'about.feature.tv.title', desc: 'about.feature.tv.desc' },
+  { icon: 'dice', title: 'about.feature.games.title', desc: 'about.feature.games.desc' },
 ];
 ---
 
@@ -57,7 +59,7 @@ const features: { icon: string; title: TranslationKey; desc: TranslationKey }[] 
     </div>
 
     <!-- Feature cards -->
-    <ul class="mt-14 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+    <ul class="mt-14 grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-6">
       {features.map((f, i) => (
         <li
           data-reveal

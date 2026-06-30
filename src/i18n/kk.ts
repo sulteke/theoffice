@@ -158,6 +158,41 @@ export const kk: Record<keyof typeof ru, string> = {
   'wa.party':
     'Сәлеметсіз бе! THE OFFICE-те мереке ұйымдастыру туралы білгім келеді.',
 
+  /* ---- About: extra amenities (TV/football + board games) ---- */
+  // TODO: verify KZ
+  'about.feature.tv.title': 'Спорт ТВ-да',
+  'about.feature.tv.desc':
+    'Футбол мен спорт трансляциялары үшін үлкен экран — кез келген уақытта қосамыз.',
+  'about.feature.games.title': 'Үстел ойындары',
+  'about.feature.games.desc':
+    'Достар компаниясына арналған үстел ойындары — кешті көңілді өткізіңіз.',
+
+  /* ---- Hookah ---- */
+  'hookah.kicker': 'Кальян',
+  'hookah.title': 'Кальян-микс',
+  'hookah.intro':
+    'Шеберлеріміздің авторлық микстері. Кез келген микс — 7000 ₸.',
+  'hookah.priceLabel': 'Кез келген дәм',
+  'hookah.flavorsNote': 'Таңдауыңызға 4 фирмалық микс',
+  'hookah.imageAlt': 'THE OFFICE-тегі кальян',
+
+  /* ---- Cart / pre-order ---- */
+  'cart.open': 'Себетті ашу',
+  'cart.title': 'Себет',
+  'cart.empty': 'Себет бос. Мәзірден «+» арқылы тағам қосыңыз.',
+  'cart.total': 'Барлығы',
+  'cart.checkout': 'WhatsApp арқылы алдын ала тапсырыс',
+  'cart.clear': 'Тазалау',
+  'cart.remove': 'Жою',
+  'cart.add': 'Себетке',
+  'cart.added': 'Себетке қосылды',
+  'cart.note': 'Алдын ала тапсырыс қызметкермен расталады. Бұл төлем емес.',
+  'cart.waHello': 'Сәлеметсіз бе! THE OFFICE-те алдын ала тапсырыс бергім келеді:',
+
+  /* ---- Reservation: attach order from cart ---- */
+  'reserve.attachOrder': 'Себеттегі тапсырысымды қосу',
+  'reserve.orderTitle': 'Менің тапсырысым',
+
   /* ---- SEO (page titles & descriptions) ---- */
   'seo.home.title': 'THE OFFICE Lounge Bar — Талдықорғандағы лаунж-бар',
   'seo.home.desc':

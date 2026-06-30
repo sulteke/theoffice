@@ -154,6 +154,40 @@ export const ru = {
   'wa.party':
     'Здравствуйте! Хочу узнать про организацию праздника в THE OFFICE.',
 
+  /* ---- About: extra amenities (TV/football + board games) ---- */
+  'about.feature.tv.title': 'Спорт на ТВ',
+  'about.feature.tv.desc':
+    'Большой экран для трансляций футбола и спорта — включим в любое время.',
+  'about.feature.games.title': 'Настольные игры',
+  'about.feature.games.desc':
+    'Настолки для компании — весело скоротать вечер за столом.',
+
+  /* ---- Hookah ---- */
+  'hookah.kicker': 'Кальян',
+  'hookah.title': 'Кальян-микс',
+  'hookah.intro':
+    'Авторские миксы от наших мастеров. Любой микс — 7000 ₸.',
+  'hookah.priceLabel': 'Любой вкус',
+  'hookah.flavorsNote': '4 фирменных микса на выбор',
+  'hookah.imageAlt': 'Кальян в THE OFFICE',
+
+  /* ---- Cart / pre-order ---- */
+  'cart.open': 'Открыть корзину',
+  'cart.title': 'Корзина',
+  'cart.empty': 'Корзина пуста. Добавьте блюда из меню кнопкой «+».',
+  'cart.total': 'Итого',
+  'cart.checkout': 'Оформить предзаказ в WhatsApp',
+  'cart.clear': 'Очистить',
+  'cart.remove': 'Удалить',
+  'cart.add': 'В корзину',
+  'cart.added': 'Добавлено в корзину',
+  'cart.note': 'Предзаказ подтверждается персоналом. Это не оплата.',
+  'cart.waHello': 'Здравствуйте! Хочу сделать предзаказ в THE OFFICE:',
+
+  /* ---- Reservation: attach order from cart ---- */
+  'reserve.attachOrder': 'Добавить мой заказ из корзины',
+  'reserve.orderTitle': 'Мой заказ',
+
   /* ---- SEO (page titles & descriptions) ---- */
   'seo.home.title': 'THE OFFICE Lounge Bar — лаунж-бар в Талдыкоргане',
   'seo.home.desc':

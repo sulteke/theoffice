@@ -53,6 +53,7 @@ the quotes `"..."`** and keep the commas.
 | What you want to change | File to open |
 |---|---|
 | **Menu dishes & prices** | `src/data/menu.ts` |
+| **Hookah price (7000 ₸) & the 4 mixes** | `src/data/hookah.ts` |
 | **Phone, WhatsApp, address, hours, Instagram, taglines** | `src/data/business.ts` |
 | **Upcoming events (Афиша)** | `src/data/events.ts` |
 | **Gallery photo captions** | `src/data/gallery.ts` |
@@ -67,6 +68,13 @@ Open `src/data/menu.ts`, find the dish, change the number:
 ```
 Prices can be `'2490'` (shows "2490 ₸"), `'2430/1890'` (two sizes), or `'—'`
 (hidden). Save the file — that's it.
+
+### Pre-order cart (корзина)
+Every menu & hookah item has a **"+"** button that adds it to a cart. Guests open
+the cart (🛒 in the header), adjust quantities, and tap **"Оформить предзаказ в
+WhatsApp"** to send you the order — or tick **"Добавить мой заказ из корзины"** on
+the booking form to attach the order to a table reservation. Nothing is charged;
+it's a pre-order you confirm by WhatsApp/phone. It works out of the box — no setup.
 
 ### Change the phone number / address / hours
 All contact details are in **one** place: `src/data/business.ts`. Change them

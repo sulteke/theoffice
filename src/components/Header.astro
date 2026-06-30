@@ -9,6 +9,7 @@ import { useTranslations, localeHref } from '../i18n/utils';
 import { getNavLinks } from '../data/nav';
 import Logo from './Logo.astro';
 import LanguageToggle from './LanguageToggle.astro';
+import Icon from './Icon.astro';
 
 interface Props {
   lang: Lang;
@@ -37,6 +38,17 @@ const reserveHref = localeHref(lang, '#reserve');
     </nav>
 
     <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Cart / pre-order button (badge shows item count) -->
+      <button
+        type="button"
+        data-cart-open
+        class="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-ink transition-colors hover:text-gold"
+        aria-label={t('cart.open')}
+      >
+        <Icon name="cart" size={22} />
+        <span data-cart-count class="absolute -right-1 -top-1 hidden min-w-[1.25rem] rounded-full bg-gold px-1 text-center text-xs font-bold leading-5 text-navy-base">0</span>
+      </button>
+
       <LanguageToggle lang={lang} class="hidden sm:inline-flex" />
       <a href={reserveHref} class="btn btn-primary hidden text-sm lg:inline-flex">
         {t('cta.reserve')}
